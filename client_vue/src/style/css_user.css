@@ -1,0 +1,198 @@
+/*前端用户样式文件*/
+
+/*
+页面内容布局样式
+*/
+.main-container {
+    padding: 0 20px;
+}
+
+/*
+页面内容的标题布局样式
+*/
+.main-container .main-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 20px;
+}
+
+/*
+页面内容的标题内容样式
+*/
+.main-container .main-title .title-name {
+    font-weight: 500;
+    color: #582F0E;
+    font-size: 18px;
+}
+
+/*
+页面内容的新闻列表布局样式
+*/
+.main-container .grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+}
+
+/*
+页面内容的新闻列表card卡片布局样式
+*/
+.main-container .grid-container .grid-card {
+    height: 100%;
+    transition: all 0.3s;
+}
+
+/*
+页面内容的新闻列表card卡片图片样式
+*/
+.main-container .grid-container .grid-card .card-image {
+    height: 100px;
+    width: 100%;
+}
+
+/*
+页面内容的新闻列表card卡片内容样式
+*/
+.main-container .grid-container .grid-card .card-content {
+    padding: 10px 0;
+}
+
+/*
+页面内容的新闻列表card卡片内容标题样式
+*/
+.main-container .grid-container .grid-card .card-content .card-name {
+    display: block;
+    text-align: center;
+    font-size: 16px;
+    color: #582F0E;
+}
+
+.main-container .grid-container .grid-card .card-content .card-name:hover {
+    text-decoration: underline;
+}
+
+/*
+页面内容的新闻列表card卡片内容文本样式
+*/
+.main-container .grid-container .grid-card .card-content .card-text {
+    font-size: 90%;
+    color: var(--el-text-color-primary);
+    height: 40px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/**
+新闻类型搜索样式
+*/
+.main-container .search-newstype button {
+    padding: 12px 19px;
+    font-size: 95%;
+    color: #582F0E;
+}
+
+.main-container .search-newstype button:hover {
+    color: #582F0E;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.main-container .search-newstype button.active-button {
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/*
+登录、注册、忘记密码页面样式
+*/
+.login-container {
+    min-height: 100vh;
+    background-image: url("@/style/img_user_login.jpeg");
+    background-size: cover;
+    background-repeat: repeat;
+    background-position: 0 -100px;
+}
+
+.login-container .main-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container .main-layout .main-content {
+    width: 50%;
+    margin-top: 5%;
+    margin-bottom: 3%;
+}
+
+.login-container .main-layout .main-content .main-login {
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.login-container .main-layout .main-content .main-login .login-title {
+    background-color: orange
+}
+
+.login-container .main-layout .main-content .main-login .login-title h5 {
+    margin: 0;
+    padding: 26px 0;
+    text-align: center
+}
+
+.login-container .main-layout .main-content .main-login .login-title h5 a {
+    font-size: 1.8rem;
+    color: #582F0E;
+}
+
+.login-container .main-layout .main-content .main-login .login-form {
+    padding-top: 20px;
+    background-color: white
+}
+
+.login-container .main-layout .main-content .main-login .login-form .el-form {
+    padding: 20px 15%;
+}
+
+.login-container .main-layout .main-content .main-login .login-form .el-form .form-button {
+    padding-top: 20px
+}
+
+.login-container .main-layout .main-content .main-login .login-form .el-form .form-button .el-button {
+    display: block;
+    margin: 0 auto;
+    width: 75%
+}
+
+.login-container .main-layout .main-content .main-login .login-form .login-footer {
+    padding: 0 50px 30px 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-container .main-layout .main-content .main-login .login-form .login-footer .el-divider {
+    margin: 0 50px;
+}
+
+/*
+页面内容的右侧内容样式
+*/
+.main-container .main-content .content-right {
+    border-left: 1px solid var(--el-menu-border-color);
+    padding: 0 20px 20px 20px;
+}
+
+/* 新闻内容视频样式 */
+.news-content video {
+    max-height: 400px !important;
+    position: unset !important;
+}
+
+/* 新闻内容图片样式 */
+.news-content img {
+    max-width: 100% !important
+}

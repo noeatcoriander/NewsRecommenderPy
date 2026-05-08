@@ -1,0 +1,285 @@
+<!--管理员数据分析页面，继承django框架列表页面-->
+{% extends "admin/change_list.html" %}
+{% load static %}
+{% block content_title %}
+    <!--导入jquery脚本组件-->
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <!--导入echarts可视化脚本组件-->
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <!--导入echarts可视化词云脚本组件-->
+    <script src="{% static 'js/echarts-wordcloud.min.js' %}"></script>
+{% endblock %}
+{% block result_list %}
+    <div style="width: 100%;padding: 20px 20px;text-align: center;">
+        <div id="chartRefPie" style="width: 100%;height: 400px;"></div>
+        <div id="chartRefBar" style="width: 100%;height: 400px;margin-top: 40px"></div>
+        <div id="chartRefCloud" style="width: 100%;height: 400px;margin-top: 40px"></div>
+    </div>
+    <script>
+        //获取div对象
+        const chartRefPie = document.getElementById('chartRefPie') //饼状图
+        const chartRefCloud = document.getElementById('chartRefCloud') //词云图
+        const chartRefBar = document.getElementById('chartRefBar') //折线图
+
+        //创建echarts实例对象
+        let chartInstancePie = null //饼状图
+        let chartInstanceCloud = null //词云图
+        let chartInstanceBar = null //折线图
+
+        //加载数据
+        const loadData = () => {
+            //新闻浏览Top30
+            let newsAnalysisByBrowse = {{ newsAnalysisByBrowse|safe }};
+            //判断数据是否为空
+            if (newsAnalysisByBrowse !== null && newsAnalysisByBrowse.length > 0) {
+                //数据格式转换，获取新闻标题、浏览量
+                newsAnalysisByBrowse = newsAnalysisByBrowse.map(({id, title, browseCount}) => ({
+                    name: title, value: browseCount
+                }))
+            }
+
+            //兴趣标签
+            let newstypeAnalysisByLabel = {{ newstypeAnalysisByLabel|safe }};
+            //判断数据是否为空
+            if (newstypeAnalysisByLabel !== null && newstypeAnalysisByLabel.length > 0) {
+                //数据格式转换，获取标签名称、标签数量
+                newstypeAnalysisByLabel = newstypeAnalysisByLabel.map(({id, newstypename, labelCount}) => ({
+                    name: newstypename, value: labelCount
+                }))
+            }
+
+            //新闻评分Top30
+            let newsAnalysisByScore = {{ newsAnalysisByScore|safe }};
+            //判断数据是否为空
+            if (newsAnalysisByScore !== null && newsAnalysisByScore.length > 0) {
+                //数据格式转换，获取新闻标题、评分
+                newsAnalysisByScore = newsAnalysisByScore.map(({id, title, scoreAvg}) => ({
+                    name: title, value: scoreAvg
+                }))
+            }
+            return [newsAnalysisByBrowse, newstypeAnalysisByLabel, newsAnalysisByScore]
+        }
+
+        //初始化echarts图表，饼状图
+        const initChartPie = (data) => {
+            //初始化echarts实例对象
+            chartInstancePie = echarts.init(chartRefPie)
+            //图表配置项
+            const option = {
+                title: { //标题配置
+                    text: '新闻评分Top30', //主标题
+                    left: 'center', //位置居中
+                    textStyle: { //样式
+                        fontSize: 18, fontWeight: 'bold'
+                    }
+                },
+                tooltip: { //提示框配置
+                    trigger: 'item' //触发类型，item：数据项图形触发
+                },
+                series: [ //系列列表配置
+                    {
+                        name: '平均分', //名称
+                        type: 'pie', //图表类型：饼图
+                        radius: ['40%', '65%'], //图表半径
+                        avoidLabelOverlap: false, //是否防止标签重叠
+                        itemStyle: { //数据项的样式配置
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        data: data, //图表数据
+                        emphasis: { //高亮状态样式
+                            label: {
+                                show: true,
+                                fontSize: 20,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        label: { //标签配置
+                            show: true //显示标签
+                        },
+                        labelLine: { //标签线条样式
+                            show: true //显示标签引导线
+                        }
+                    }
+                ]
+            }
+            //设置图表配置项
+            chartInstancePie.setOption(option)
+        }
+
+        //初始化echarts图表，词云图
+        const initChartCloud = (data) => {
+            //初始化echarts实例对象
+            chartInstanceCloud = echarts.init(chartRefCloud)
+            //图表配置项
+            const option = {
+                title: { //标题配置
+                    text: '新闻浏览Top30', //主标题
+                    left: 'center', //位置居中
+                    textStyle: { //样式
+                        fontSize: 18, fontWeight: 'bold'
+                    }
+                },
+                tooltip: { //提示框配置
+                    formatter: function (params) {
+                        //鼠标悬停时显示完整名称
+                        return `${params.data.fullName}: ${params.value}`
+                    }
+                },
+                series: [ //系列列表配置
+                    {
+                        name: '浏览量', //名称
+                        type: 'wordCloud', //图表类型：词云图
+                        shape: 'pentagon', //云整体形状，'circle'（圆形）、'cardioid'（心形）、'diamond'（菱形）、'triangle-forward'（正三角形）、
+                        // 'triangle'（三角形）、'pentagon'（五边形）、'star'（星形）
+                        left: 'center', //水平居中
+                        top: 'center', //垂直居中
+                        width: '90%', //宽度90%
+                        height: '90%', //高度90%
+                        sizeRange: [15, 40], //文字大小范围
+                        rotationRange: [-90, 90], //文字旋转角度
+                        rotationStep: 15, //旋转角度步长
+                        gridSize: 10, //网格大小
+                        drawOutOfBound: false, //是否允许绘制超出画布边界的词语
+                        textPadding: 0, // 文字内边距
+                        autoSize: { // 自动调整大小
+                            enable: true, // 启用自动调整
+                            minSize: 12 // 最小字体大小
+                        },
+                        textStyle: {
+                            color: () => { //字体颜色
+                                return `rgb(${
+                                    Math.round(Math.random() * 160 + 50)
+                                }, ${
+                                    Math.round(Math.random() * 160 + 50)
+                                }, ${
+                                    Math.round(Math.random() * 160 + 50)
+                                })`;
+                            }
+                        },
+                        emphasis: {
+                            textStyle: {
+                                shadowBlur: 10, //阴影模糊值
+                                shadowColor: '#333' //阴影颜色
+                            }
+                        },
+                        data: data //数据
+                    }
+                ]
+            }
+            //设置图表配置项
+            chartInstanceCloud.setOption(option)
+        }
+
+        //初始化echarts图表，折线图
+        const initChartBar = (data) => {
+            //初始化echarts实例对象
+            chartInstanceBar = echarts.init(chartRefBar)
+            //图表配置项
+            const option = {
+                title: { //标题配置
+                    text: '兴趣标签', //主标题
+                    left: 'center', //位置居中
+                    textStyle: { //样式
+                        fontSize: 18, fontWeight: 'bold'
+                    }
+                },
+                tooltip: { //提示框配置
+                    trigger: 'axis', //触发类型，axis：坐标轴触发
+                    axisPointer: { //坐标轴指示器配置
+                        type: 'shadow'
+                    }
+                },
+                grid: { //网格配置
+                    left: '3%', //左侧留白3%
+                    right: '4%', //右侧留白4%
+                    bottom: '3%', //底部留白3%
+                    containLabel: true //包含坐标轴标签在内的所有内容（确保标签显示完整）
+                },
+                xAxis: [ //X轴配置
+                    {
+                        type: 'category', //类目轴
+                        data: data.map(item => item.name), //X轴数据
+                        axisTick: {
+                            alignWithLabel: true //刻度线与标签对齐
+                        },
+                        axisLabel: {
+                            interval: 0, //显示所有标签
+                            margin: 20, //标签与轴线之间的距离
+                            rotate: 20 //标签旋转（防止标签重叠）
+                        }
+                    }
+                ],
+                yAxis: [ //Y轴配置
+                    {type: 'value'}
+                ],
+                series: [ //数据系列配置
+                    {
+                        name: '选择数量',
+                        type: 'line', //折线图
+                        smooth: true, //平滑
+                        barWidth: '60%', //柱条宽度
+                        data: data.map(item => item.value) //Y轴数据
+                    }
+                ]
+            }
+            //设置图表配置项
+            chartInstanceBar.setOption(option)
+        }
+
+        //创建网页大小变化时自动调整图表大小函数
+        const handleResize = () => {
+            chartInstancePie?.resize()
+            chartInstanceCloud?.resize()
+            chartInstanceBar?.resize()
+        }
+
+        $(function () {
+            //加载数据
+            const [newsAnalysisByBrowse, newstypeAnalysisByLabel, newsAnalysisByScore] = loadData()
+
+            //饼状图
+            if (newsAnalysisByScore !== null && newsAnalysisByScore.length > 0) {
+                initChartPie(newsAnalysisByScore)
+            } else {
+                chartRefPie.style.height = "auto"
+                chartRefPie.innerHTML = "暂无评分数据！"
+            }
+
+            //词云图
+            if (newsAnalysisByBrowse !== null && newsAnalysisByBrowse.length > 0) {
+                //只截取前8个字符，超过的部分用省略号表示
+                const formattedData = newsAnalysisByBrowse.map(item => {
+                    //截取前8个字符
+                    let truncatedName = item.name.substring(0, 8)
+                    //如果原始名称长度超过8个字符，添加省略号
+                    if (item.name.length > 8) {
+                        truncatedName += '...'
+                    }
+                    return {
+                        name: truncatedName,
+                        value: item.value,
+                        fullName: item.name //保存完整名称用于tooltip显示
+                    }
+                })
+                initChartCloud(formattedData)
+            } else {
+                chartRefCloud.style.height = "auto"
+                chartRefCloud.innerHTML = "暂无浏览数据！"
+            }
+
+            //折线图
+            if (newstypeAnalysisByLabel !== null && newstypeAnalysisByLabel.length > 0) {
+                initChartBar(newstypeAnalysisByLabel)
+            } else {
+                chartRefBar.style.height = "auto"
+                chartRefBar.innerHTML = "暂无兴趣标签数据！"
+            }
+
+            //添加resize事件监听
+            window.addEventListener('resize', handleResize)
+        })
+    </script>
+{% endblock %}
+{% block pagination %}{% endblock %}

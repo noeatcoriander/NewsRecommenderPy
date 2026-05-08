@@ -1,0 +1,86 @@
+/*前端基础样式文件*/
+
+/**
+自定义基础样式，覆盖element plus样式
+ */
+:root {
+    --el-color-primary: #582F0E; /* 主题色 */
+    --el-color-primary-light-3: #6D3512; /* 主题色hover */
+    --el-color-primary-light-5: #45240A; /* 主题色active */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+a, button {
+    box-shadow: none !important;
+}
+
+/**
+文本换行样式
+ */
+.text-break {
+    word-break: break-all !important;
+    word-wrap: break-word !important;
+}
+
+/**
+文本溢出样式
+ */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/**
+暂无数据样式
+ */
+.data-empty {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/**
+图片上传样式
+*/
+.image-upload .el-upload {
+    border: 1px dashed var(--el-border-color);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+}
+
+.image-upload .el-upload:hover {
+    border-color: var(--el-color-primary);
+}
+
+.el-icon.image-uploader-icon {
+    font-size: 50px;
+    color: #8c939d;
+    width: 137px;
+    height: 137px;
+    text-align: center;
+}
+
+/**
+分页样式
+*/
+.pagination {
+    margin: 40px 0;
+}
+
+.pagination .el-pagination {
+    justify-content: center;
+}
+
+/**
+font awesome字体图标样式
+ */
+.icon {
+    font-size: 14px !important;
+    color: var(--el-text-color-primary);
+}

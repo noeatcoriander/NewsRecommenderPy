@@ -1,0 +1,112 @@
+   
+	<html>
+<head>
+<link rel="stylesheet" href="./css/style.css"></link>
+ <script src="./index.js"></script>
+
+
+</head> 
+<body>
+
+<textarea id='id_introduction'></textarea>
+
+</body>
+
+<script>
+
+
+
+// 等待DOM加载完成
+document.addEventListener('DOMContentLoaded', function () {
+    // 获取content字段的textarea元素（Django Admin默认ID为id_content）
+    const textarea = document.getElementById('id_introduction');
+    if (textarea) {
+        // 隐藏原生textarea
+        textarea.style.display = 'none';
+
+        const editorConfig = {
+            placeholder: '请输入新闻内容...', //编辑器提示信息
+            maxLength: 30000, //最大内容长度
+            xss: {ignore: true}, //关闭XSS防御配置
+            allowedTags: true, //允许所有HTML标签
+            allowedAttributes: true, //允许所有HTML标签属性
+            pasteFilter: false, //关闭复制粘贴过滤
+            autoFormat: false, //禁用自动格式化，防止内容被修改
+            autoAddP: false, //禁用自动添加<p>标签
+            MENU_CONF: {
+                uploadImage: { //图片上传配置
+                    allowPasteImage: true, //允许复制粘贴图片
+                    allowDrag: true, //允许图片拖拽上传
+                    server: 'admin/public/doEditorUpload', //图片上传后端地址
+                    maxFileSize: 10 * 1024 * 1024, //图片上传最大大小，单位MB
+                    allowedFileTypes: [], //允许上传的图片类型
+                    maxNumberOfFiles: 10, //最多可上传图片数量，默认100
+                    fieldName: 'file', //上传字段名，即上传到后端的图片文件变量名，默认'wangeditor-uploaded-image'
+                    timeout: 10000, //请求超时时间，默认10秒
+                    //图片上传成功之后的回调函数
+                    onSuccess(file, res) {
+                        console.log(`${file.name} 上传成功`, res)
+                    },
+                    //图片上传失败之后的回调函数
+                    onFailed(file, res) {
+                        console.log(`${file.name} 上传失败`, res)
+                        const message = res.message ? res.message : '上传失败！'
+                        //ElMessage.error(message)
+                    },
+                    //图片上传错误之后的回调函数，系统运行异常或请求超时
+                    onError(file, err, res) {
+                        console.log(`${file.name} 上传出错`, err, res)
+                        //ElMessage.error('上传失败！')
+                    }
+                },
+                uploadVideo: { //禁用视频上传
+                    disabled: true
+                }
+            }
+        }
+
+        const toolbarConfig = {
+            excludeKeys: ['uploadVideo'] //取消视频上传按钮
+        }
+
+        // 创建编辑器容器
+        const toolbarContainer = document.createElement('div');
+		toolbarContainer.style.borderBottom = "1px solid #ccc"
+        textarea.parentNode.appendChild(toolbarContainer);
+
+        // 创建编辑器容器
+        const editorContainer = document.createElement('div');
+        textarea.parentNode.appendChild(editorContainer);
+        // 初始化WangEditor
+        const editor = window.wangEditor.createEditor({
+            selector: editorContainer,
+            mode: 'default',
+            config: editorConfig,
+        });
+
+        const toolbar = window.wangEditor.createToolbar({
+            editor,
+            selector: toolbarContainer,
+            mode: 'default',
+            config: toolbarConfig
+        });
+
+
+        // 提交表单时，将编辑器内容同步到textarea
+        document.querySelector('form').addEventListener('submit', function () {
+            textarea.value = editor.getHtml();
+        });
+    }
+});
+
+
+
+
+
+
+
+</script>
+
+
+
+</html>
